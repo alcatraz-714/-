@@ -1,0 +1,32 @@
+
+name: Build Windows EXE
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: chickensoft-games/setup-godot@v2
+        with:
+          version: 4.3.0
+          use-dotnet: false
+          include-templates: true
+
+      - name: Import project
+        run: godot --headless --editor --path . --quit
+
+      - name: Export EXE
+        run: |
+          mkdir -p build
+          godot --headless --path . --export-release "Windows Desktop" build/Chuma3D.exe
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Chuma3D-Windows-EXE
+          path: build/Chuma3D.exe
